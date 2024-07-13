@@ -3,24 +3,31 @@ import { Container, Row, Col, Button } from "reactstrap";
 import Highlight from "../components/Highlight";
 import Loading from "../components/Loading";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import { getAllFilesForUser,executeFile } from "../API requests/Get.js";
+import { getAllFilesForUser, executeFile, getUserFollowers, getUserFollowing } from "../API requests/Get.js";
 
 // Exemple de fonction simulateur d'exécution de fichier
 // Remplacez cette fonction par l'appel réel à votre API d'exécution
 
-
-export const ProfileComponent = () => {
+const ProfileComponent = () => {
   const { user } = useAuth0(); // Utilisation du hook Auth0 pour obtenir les informations utilisateur
   const [files, setFiles] = useState([]); // État pour les fichiers, initialisé à un tableau vide
   const [loading, setLoading] = useState(true); // État pour le chargement
   const [error, setError] = useState(null); // État pour les erreurs
   const [executionResults, setExecutionResults] = useState({}); // État pour les résultats d'exécution
+  const [followers, setFollowers] = useState([]); // État pour les followers
+  const [following, setFollowing] = useState([]); // État pour les followings
 
   useEffect(() => {
-    const fetchFiles = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAllFilesForUser("badis.tighlit"); // Appel API pour obtenir les fichiers
-        setFiles(data); // Mise à jour de l'état des fichiers
+        const filesData = await getAllFilesForUser(user.nickname); // Appel API pour obtenir les fichiers
+        setFiles(filesData); // Mise à jour de l'état des fichiers
+
+        const followersData = await getUserFollowers(user.nickname); // Appel API pour obtenir les followers
+        setFollowers(followersData); // Mise à jour de l'état des followers
+
+        const followingData = await getUserFollowing(user.nickname); // Appel API pour obtenir les followings
+        setFollowing(followingData); // Mise à jour de l'état des followings
       } catch (error) {
         setError(error); // Gestion des erreurs
       } finally {
@@ -28,11 +35,11 @@ export const ProfileComponent = () => {
       }
     };
 
-    fetchFiles(); // Appel de la fonction asynchrone
-  }, []); // Le tableau vide signifie que useEffect s'exécute uniquement après le montage
+    fetchData(); // Appel de la fonction asynchrone
+  }, [user.nickname]); // Dépendance de useEffect
 
   if (loading) return <Loading />; // Affichage du chargement
-  if (error) return <p>Error loading files: {error.message}</p>; // Affichage de l'erreur s'il y en a une
+  if (error) return <p>Error loading data: {error.message}</p>; // Affichage de l'erreur s'il y en a une
 
   // Fonction pour décoder le contenu Base64
   const decodeBase64 = (base64String) => {
@@ -83,6 +90,20 @@ export const ProfileComponent = () => {
       </Row>
       <Row>
         <Highlight>{JSON.stringify(user, null, 2)}</Highlight>
+      </Row>
+      <Row>
+        <Col>
+          <h3>Followers:</h3>
+          <p>
+            <a href={`/followers/${user.nickname}`}>{followers.length}</a>
+          </p>
+        </Col>
+        <Col>
+          <h3>Following:</h3>
+          <p>
+            <a href={`/following/${user.nickname}`}>{following.length}</a>
+          </p>
+        </Col>
       </Row>
       <Row>
         <h3>Files:</h3>

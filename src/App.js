@@ -18,6 +18,7 @@ import "./App.css";
 import initFontAwesome from "./utils/initFontAwesome";
 import UserProfilePage from "./views/UserProfilePage";
 import CreateScriptPage from "./views/CreateScriptPage";
+import PipelineExecution from "./views/PipelineExecution";
 initFontAwesome();
 
 const App = () => {
@@ -40,6 +41,7 @@ const App = () => {
             <Route path="/" exact component={Home} />
             <Route path="/profile" component={UserProfilePage} />
             <Route path="/newScript" component={CreateScriptPage} />
+            <Route path="/newPipeline" component={PipelineExecution} />
             <Route path="/external-api" component={ExternalApi} />
           </Switch>
         </Container>

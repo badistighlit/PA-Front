@@ -19,6 +19,7 @@ const FeedComponent = () => {
   useEffect(() => {
     const fetchFeed = async () => {
       try {
+
         const feedData = await getFeedForUser(username);
         console.log(feedData)
         setPosts(feedData);
