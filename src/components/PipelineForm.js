@@ -48,7 +48,7 @@ const PipelineForm = () => {
         scriptId: Yup.number().required('Le script est requis'),
       })
     ).min(1, 'Au moins un script doit être sélectionné'),
-    inputFile: Yup.mixed().required('Le fichier d\'entrée est requis'),
+    
   });
 
   const onSubmit = async (values) => {

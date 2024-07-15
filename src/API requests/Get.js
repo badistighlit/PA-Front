@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const authUrl = 'https://code-n-share-api-authentification.vercel.app/application_token';
 const apiUrl = 'https://code-n-share-api-gateway.vercel.app';
+const filesApi = 'https://code-n-share-api-files.vercel.app'
 
 // Fonction pour obtenir le token d'authentification
 const getAuthToken = async () => {
@@ -109,9 +110,11 @@ export const executeFile = async (fileId) => {
 };
 export const executePipeLine = async (formData) => {
   try {
-    const config = await getConfigWithToken();
-    const response = await axios.post('http://localhost:4000/executePipeline', formData, {
+    const token = await getAuthToken();
+
+    const response = await axios.post(`${filesApi}/executePipeline`, formData, {
       headers: {
+
         'Content-Type': 'multipart/form-data',
        
       },
