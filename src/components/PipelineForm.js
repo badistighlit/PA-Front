@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
 import * as Yup from 'yup';
-import { Button, FormGroup, Label, Input, Col, Row, FormText } from 'reactstrap';
+import { Button, FormGroup, Label, Input, Col, Row, FormText, Spinner, Card, CardBody, CardTitle, CardText } from 'reactstrap';
 import styled from 'styled-components';
 import { useAuth0 } from '@auth0/auth0-react';
-import { executePipeLine, getAllFilesForUser } from '../API requests/Get'; // Import the necessary API functions
+import { executePipeLine, getAllFilesForUser, getPipelineResult, getFileById } from '../API requests/Get'; 
 
 // Composants stylisés
 const FormContainer = styled.div`
@@ -25,9 +25,17 @@ const DropzoneContainer = styled.div`
   background: #f4f4f4;
 `;
 
+const ScriptResult = styled(Card)`
+  margin-top: 20px;
+`;
+
 const PipelineForm = () => {
   const { user } = useAuth0();
   const [scripts, setScripts] = useState([]);
+  const [jobId, setJobId] = useState(null);
+  const [results, setResults] = useState([]);
+  const [finalResult, setFinalResult] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const fetchScripts = async () => {
@@ -42,13 +50,36 @@ const PipelineForm = () => {
     fetchScripts();
   }, [user]);
 
+  useEffect(() => {
+    let interval;
+    if (jobId) {
+      interval = setInterval(async () => {
+        try {
+          const response = await getPipelineResult(jobId);
+          if (response.status === 'Job is still processing') {
+            console.log('Job is still processing');
+          } else if (response.result) {
+            clearInterval(interval);
+            setIsProcessing(false);
+            const { resultat, idFichierIntermediaire } = response.result.returnvalue;
+            setFinalResult(resultat);
+            const scriptResults = await Promise.all(idFichierIntermediaire.map(id => getFileById(id)));
+            setResults(scriptResults);
+          }
+        } catch (error) {
+          console.error('Error fetching pipeline result:', error);
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [jobId]);
+
   const validationSchema = Yup.object({
     selectedScripts: Yup.array().of(
       Yup.object().shape({
         scriptId: Yup.number().required('Le script est requis'),
       })
     ).min(1, 'Au moins un script doit être sélectionné'),
-    
   });
 
   const onSubmit = async (values) => {
@@ -63,9 +94,11 @@ const PipelineForm = () => {
   
       const response = await executePipeLine(formData);
   
-      if (response) {
-        console.log('Pipeline executed successfully:', response);
-        // Handle success (e.g., display results)
+      if (response && response.jobId) {
+        setJobId(response.jobId);
+        setIsProcessing(true);
+        setResults([]);
+        setFinalResult(null);
       } else {
         console.error('Error executing the pipeline');
       }
@@ -164,12 +197,36 @@ const PipelineForm = () => {
 
             <FormGroup row>
               <Col sm={{ size: 10, offset: 2 }}>
-                <Button type="submit" color="primary">Exécuter le pipeline</Button>
+                <Button type="submit" color="primary" disabled={isProcessing}>Exécuter le pipeline</Button>
               </Col>
             </FormGroup>
           </Form>
         )}
       </Formik>
+
+      {isProcessing && <Spinner color="primary" style={{ marginTop: '20px' }}>Pipeline en cours d'exécution...</Spinner>}
+
+      {results.length > 0 && results.map((result, index) => (
+        <ScriptResult key={index}>
+          <CardBody>
+            <CardTitle tag="h5">Résultat du script {index + 1} :</CardTitle>
+            <CardText>
+              <pre>{result.fileContent}</pre>
+            </CardText>
+          </CardBody>
+        </ScriptResult>
+      ))}
+
+      {finalResult && (
+        <ScriptResult>
+          <CardBody>
+            <CardTitle tag="h5">Résultat final :</CardTitle>
+            <CardText>
+              <pre>{finalResult}</pre>
+            </CardText>
+          </CardBody>
+        </ScriptResult>
+      )}
     </FormContainer>
   );
 };

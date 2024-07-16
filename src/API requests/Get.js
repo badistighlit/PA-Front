@@ -171,6 +171,16 @@ export const AllCommentForFile = async (idFile) => {
   } catch (error) {
     console.error('Error fetching comments:', error);
     throw error;
-  }
+  } };
+
+  export const getPipelineResult = async (idJob) => {
+    try {
+      const config = await getConfigWithToken();
+      const response = await axios.get(`${apiUrl}/files/pipelineResult/${idJob}`, config);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      throw error;
+    }
 
 };
