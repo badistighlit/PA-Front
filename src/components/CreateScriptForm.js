@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Form, FormGroup, Label, Input, Col } from 'reactstrap';
-import { useAuth0 } from "@auth0/auth0-react"; 
+import { Button, Form, FormGroup, Label, Input, Col, Alert } from 'reactstrap';
+import { useAuth0 } from "@auth0/auth0-react";
 import { useDropzone } from 'react-dropzone';
 
 const FormContainer = styled.div`
@@ -27,6 +27,8 @@ const DropzoneContainer = styled.div`
 const CreateScriptForm = () => {
   const { user } = useAuth0(); // Obtient l'utilisateur connecté
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
 
   const formik = useFormik({
     initialValues: {
@@ -57,9 +59,6 @@ const CreateScriptForm = () => {
       tags: Yup.string(),
     }),
     onSubmit: async (values) => {
-      console.log('Form values:', values);
-      console.log('Uploaded file:', uploadedFile);
-
       const formData = new FormData();
       formData.append('fileName', values.fileName);
       formData.append('is_script', values.isScript);
@@ -71,7 +70,7 @@ const CreateScriptForm = () => {
       }
       formData.append('tags', values.tags);
       formData.append('file', uploadedFile);
-      formData.append('id_user', user.nickname); 
+      formData.append('id_user', user.nickname);
 
       try {
         const response = await fetch('https://code-n-share-api-files.vercel.app/CreateFile', {
@@ -80,15 +79,19 @@ const CreateScriptForm = () => {
         });
 
         if (response.ok) {
-          console.log('Script créé avec succès');
-          // Optionally show a success message to the user
+          setMessage('Script créé avec succès !');
+          setMessageType('success');
+          formik.resetForm(); // Réinitialise le formulaire
+          setUploadedFile(null); // Réinitialise le fichier uploadé
         } else {
-          console.error('Erreur lors de la création du script');
-          // Optionally show an error message to the user
+          const errorResponse = await response.json();
+          setMessage(errorResponse.message || 'Erreur lors de la création du script');
+          setMessageType('error');
         }
       } catch (error) {
         console.error('Erreur réseau ou autre', error);
-        // Optionally show an error message to the user
+        setMessage('Erreur réseau ou autre');
+        setMessageType('error');
       }
     },
   });
@@ -102,6 +105,12 @@ const CreateScriptForm = () => {
   return (
     <FormContainer>
       <Form onSubmit={formik.handleSubmit}>
+        {message && (
+          <Alert color={messageType === 'success' ? 'success' : 'danger'}>
+            {message}
+          </Alert>
+        )}
+
         <FormGroup row>
           <Label for="fileName" sm={2}>Nom du fichier</Label>
           <Col sm={10}>
