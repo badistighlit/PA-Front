@@ -95,13 +95,13 @@ const ProfileComponent = () => {
         <Col>
           <h3>Followers:</h3>
           <p>
-            <a href={`/followers/${user.nickname}`}>{followers.length}</a>
+            <a href={`/followers/${user.sub}`}>{followers.length}</a>
           </p>
         </Col>
         <Col>
           <h3>Following:</h3>
           <p>
-            <a href={`/following/${user.nickname}`}>{following.length}</a>
+            <a href={`/following/${user.sub}`}>{following.length}</a>
           </p>
         </Col>
       </Row>

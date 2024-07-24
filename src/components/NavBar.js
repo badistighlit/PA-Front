@@ -83,7 +83,37 @@ const NavBar = () => {
                 
                 
                 
+                
               )}
+                            {isAuthenticated && (
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    to="/communities"
+                    exact
+                    activeClassName="router-link-exact-active"
+                  >
+communities                  </NavLink>
+
+                </NavItem>
+                
+                
+                
+                
+                
+              )}
+
+            <NavItem>
+              {isAuthenticated &&(
+                <NavLink
+                  tag={RouterNavLink}
+                  to="/favorites"
+                  exact
+                  activeClassName="router-link-exact-active"
+                >
+                  Scripts favoris
+                </NavLink>)}
+              </NavItem>
             </Nav>
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (

@@ -68,7 +68,8 @@ const UserProfilePage = () => {
       <Row>
         <Col>
           <h3>Mes Fichiers:</h3>
-          <ProfileFeedComponent />
+          <ProfileFeedComponent userId={user.sub} /> {/* Passe l'ID de l'utilisateur connecté */}
+  
         </Col>
       </Row>
 

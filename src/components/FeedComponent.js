@@ -15,14 +15,15 @@ const FeedComponent = () => {
   const [posts, setPosts] = useState([]);
   const { user } = useAuth0();
  
-  const username =user.nickname;
+  const username =user.sub;
   useEffect(() => {
     const fetchFeed = async () => {
       try {
 
         const feedData = await getFeedForUser(username);
         console.log(feedData)
-        setPosts(feedData);
+        const sortedFeedData = feedData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setPosts(sortedFeedData);
       } catch (error) {
         console.error('Error fetching the feed:', error);
       }

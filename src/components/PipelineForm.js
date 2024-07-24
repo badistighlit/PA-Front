@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { Button, FormGroup, Label, Input, Col, Row, FormText, Spinner, Card, CardBody, CardTitle, CardText } from 'reactstrap';
 import styled from 'styled-components';
 import { useAuth0 } from '@auth0/auth0-react';
-import { executePipeLine, getAllFilesForUser, getPipelineResult, getFileById } from '../API requests/Get';
+import { executePipeLine, getAllFilesForUser, getPipelineResult, getFileById, getSavedScripts } from '../API requests/Get';
 
 // Composants stylisés
 const FormContainer = styled.div`
@@ -36,12 +36,15 @@ const PipelineForm = () => {
   const [results, setResults] = useState([]);
   const [finalResult, setFinalResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [textInput, setTextInput] = useState(''); // Nouvel état pour le texte
 
   useEffect(() => {
     const fetchScripts = async () => {
       try {
-        const data = await getAllFilesForUser(user.nickname);
-        setScripts(data);
+        const userScripts = await getAllFilesForUser(user.sub);
+        const savedScripts = await getSavedScripts(user.sub);
+        const combinedScripts = [...userScripts, ...savedScripts];
+        setScripts(combinedScripts);
       } catch (error) {
         console.error('Erreur lors de la récupération des scripts', error);
       }
@@ -113,7 +116,14 @@ const PipelineForm = () => {
 
       formData.append('scriptsId', JSON.stringify(scriptsId));
       formData.append('id_user', user.nickname);
-      formData.append('file', values.inputFile);
+
+      // Si l'utilisateur a entré du texte, le convertir en fichier
+      if (textInput) {
+        const blob = new Blob([textInput], { type: 'text/plain' });
+        formData.append('file', blob, 'input.txt');
+      } else if (values.inputFile) {
+        formData.append('file', values.inputFile);
+      }
 
       const response = await executePipeLine(formData);
       console.log('Réponse de l\'exécution du pipeline:', response);
@@ -220,22 +230,39 @@ const PipelineForm = () => {
 
             <FormGroup>
               <Label for="inputFile">Fichier d'entrée</Label>
-              <DropzoneContainer>
-                <input
-                  type="file"
-                  onChange={(event) => onDrop(event.currentTarget.files, setFieldValue)}
-                />
-                {values.inputFile ? (
-                  <p>{values.inputFile.name}</p>
-                ) : (
-                  <p>Glissez-déposez un fichier ici, ou cliquez pour sélectionner un fichier</p>
-                )}
-              </DropzoneContainer>
-              {values.inputFile && (
-                <FormText color="danger">
-                  {values.inputFile.name}
-                </FormText>
-              )}
+              <Row>
+                <Col md={6}>
+                  <DropzoneContainer>
+                    <input
+                      type="file"
+                      onChange={(event) => onDrop(event.currentTarget.files, setFieldValue)}
+                    />
+                    {values.inputFile ? (
+                      <p>{values.inputFile.name}</p>
+                    ) : (
+                      <p>Glissez-déposez un fichier ici, ou cliquez pour sélectionner un fichier</p>
+                    )}
+                  </DropzoneContainer>
+                  {values.inputFile && (
+                    <FormText color="danger">
+                      {values.inputFile.name}
+                    </FormText>
+                  )}
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="textInput">Ou entrez du texte</Label>
+                    <Input
+                      type="textarea"
+                      name="textInput"
+                      id="textInput"
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      placeholder="Saisissez votre texte ici..."
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
             </FormGroup>
 
             <FormGroup row>

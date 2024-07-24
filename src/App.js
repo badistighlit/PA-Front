@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Container } from "reactstrap";
 
 import Loading from "./components/Loading";
@@ -9,7 +9,8 @@ import Home from "./views/Home";
 import Profile from "./views/Profile";
 import ExternalApi from "./views/ExternalApi";
 import { useAuth0 } from "@auth0/auth0-react";
-import history from "./utils/history";
+import CommunitiesPage from "./views/CommunitiesPage";
+import CommunityDetails from './views/CommunityDetailsPage';
 
 // styles
 import "./App.css";
@@ -19,10 +20,12 @@ import initFontAwesome from "./utils/initFontAwesome";
 import UserProfilePage from "./views/UserProfilePage";
 import CreateScriptPage from "./views/CreateScriptPage";
 import PipelineExecution from "./views/PipelineExecution";
+import FavoritesPage from "./views/FavoritePage";
+import OtherUserProfilePage from'./views/OtherUserProfilePage'
 initFontAwesome();
 
 const App = () => {
-  const { isLoading, error } = useAuth0();
+  const { user, isLoading, error } = useAuth0();
 
   if (error) {
     return <div>Oops... {error.message}</div>;
@@ -33,7 +36,7 @@ const App = () => {
   }
 
   return (
-    <Router history={history}>
+    <Router>
       <div id="app" className="d-flex flex-column h-100">
         <NavBar />
         <Container className="flex-grow-1 mt-5">
@@ -43,7 +46,11 @@ const App = () => {
             <Route path="/newScript" component={CreateScriptPage} />
             <Route path="/newPipeline" component={PipelineExecution} />
             <Route path="/external-api" component={ExternalApi} />
-          </Switch>
+            <Route path="/favorites" component={FavoritesPage} />
+            <Route path="/communities" component={CommunitiesPage} />
+            <Route path="/community/:id" component={CommunityDetails} />
+            <Route path="/profileOf/:userId" component={OtherUserProfilePage} /> {/* Route pour le profil d'autres utilisateurs */}
+                      </Switch>
         </Container>
         <Footer />
       </div>

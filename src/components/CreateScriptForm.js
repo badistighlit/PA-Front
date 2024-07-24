@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Button, Form, FormGroup, Label, Input, Col, Alert } from 'reactstrap';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDropzone } from 'react-dropzone';
+import axios from 'axios';
 
 const FormContainer = styled.div`
   background: #f9f9f9;
@@ -24,11 +25,16 @@ const DropzoneContainer = styled.div`
   background: #f4f4f4;
 `;
 
-const CreateScriptForm = () => {
-  const { user } = useAuth0(); // Obtient l'utilisateur connecté
+const CreateScriptForm = ({ idCommunity, onSuccess }) => {
+  const { user } = useAuth0();
   const [uploadedFile, setUploadedFile] = useState(null);
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+  const [messageType, setMessageType] = useState(''); // 'success' ou 'error'
+
+  // Log pour vérifier si idCommunity est bien passé
+  useEffect(() => {
+    console.log("idCommunity dans CreateScriptForm:", idCommunity);
+  }, [idCommunity]);
 
   const formik = useFormik({
     initialValues: {
@@ -60,36 +66,44 @@ const CreateScriptForm = () => {
     }),
     onSubmit: async (values) => {
       const formData = new FormData();
-      formData.append('fileName', values.fileName);
-      formData.append('is_script', values.isScript);
-      if (values.isScript) {
-        formData.append('file_language', values.scriptLanguage);
-      }
-      if (values.takesInput) {
-        formData.append('input_type', values.inputType);
-      }
+      formData.append('id_user', user.sub);
+      formData.append('file_language', values.scriptLanguage);
       formData.append('tags', values.tags);
-      formData.append('file', uploadedFile);
-      formData.append('id_user', user.nickname);
+      formData.append('is_script', values.isScript);
+      formData.append('type_input', values.takesInput ? values.inputType : 'null');
+      formData.append('user_nickname', user.nickname);
+      if (uploadedFile) {
+        formData.append('file', uploadedFile);
+      } else {
+        setMessage('Aucun fichier sélectionné');
+        setMessageType('error');
+        return;
+      }
 
       try {
-        const response = await fetch('https://code-n-share-api-files.vercel.app/CreateFile', {
-          method: 'POST',
-          body: formData,
-        });
+        const config = {
+          method: 'post',
+          url: idCommunity ? `https://code-n-share-api-files.vercel.app/PostOnCommunity/${idCommunity}` : 'https://code-n-share-api-files.vercel.app/CreateFile',
+          headers: { 
+            'Content-Type': 'multipart/form-data'
+          },
+          data: formData,
+        };
+        console.log("url"+config.url)
 
-        if (response.ok) {
-          setMessage('Script créé avec succès !');
+        const response = await axios.request(config);
+
+        if (response.data) {
+          setMessage(idCommunity ? 'Publication dans la communauté réussie !' : 'Fichier créé avec succès !');
           setMessageType('success');
           formik.resetForm(); // Réinitialise le formulaire
           setUploadedFile(null); // Réinitialise le fichier uploadé
+          if (onSuccess) onSuccess(); // Appel de la fonction de rappel après succès
         } else {
-          const errorResponse = await response.json();
-          setMessage(errorResponse.message || 'Erreur lors de la création du script');
-          setMessageType('error');
+          throw new Error('Erreur lors de la création du fichier');
         }
       } catch (error) {
-        console.error('Erreur réseau ou autre', error);
+        console.error('Erreur lors de la création ou publication', error);
         setMessage('Erreur réseau ou autre');
         setMessageType('error');
       }
@@ -98,6 +112,7 @@ const CreateScriptForm = () => {
 
   const onDrop = (acceptedFiles) => {
     setUploadedFile(acceptedFiles[0]);
+    console.log('Accepted File:', acceptedFiles[0]); // Vérification du fichier accepté
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
