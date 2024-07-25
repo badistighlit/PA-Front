@@ -6,7 +6,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { getCommunity, getCommunitiesOfUser, getFeedCommunity } from '../API requests/Get';
-import { Link } from 'react-router-dom'; // Importez Link pour la navigation
+import { Link } from 'react-router-dom';
 
 const decodeBase64 = (base64String) => {
   try {
@@ -16,12 +16,14 @@ const decodeBase64 = (base64String) => {
   }
 };
 
+// Styles modifiés
 const PostContainer = styled.div`
-  background: #fff;
+  background: #f9f9f9; /* Couleur de fond légèrement grise */
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère pour plus de profondeur */
 `;
 
 const PostHeader = styled.div`
@@ -81,7 +83,9 @@ const CommentsSection = styled.div`
 const Comment = styled.div`
   margin-top: 10px;
   padding: 10px;
-  border-top: 1px solid #ddd;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa; /* Couleur de fond légèrement plus claire pour les commentaires */
   position: relative;
 `;
 
@@ -162,7 +166,14 @@ const PostComponent = ({ post, onPostDelete }) => {
 
     try {
       const result = await executeFile(post.id_file);
-      setExecutionResult(result);
+      console.log(result)
+      if ( result ) {
+        setExecutionResult(result);
+        
+      } else if (result.result === undefined || result.result === null) {
+        setExecutionResult("Il n'y a pas de sortie suite à cette exécution.");
+      } else {
+        setExecutionResult(`Erreur: ${result.error}`);      }
     } catch (error) {
       console.error("Error executing file:", error);
       setExecutionResult("Erreur lors de l'exécution du fichier.");

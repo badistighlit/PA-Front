@@ -13,8 +13,7 @@ const onRedirectCallback = (appState) => {
   );
 };
 
-// Please see https://auth0.github.io/auth0-react/interfaces/Auth0ProviderOptions.html
-// for a full list of the available properties on the provider
+
 const config = getConfig();
 
 const providerConfig = {
@@ -36,7 +35,4 @@ root.render(
   </Auth0Provider>,
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();

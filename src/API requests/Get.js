@@ -4,6 +4,7 @@ const authUrl = 'https://code-n-share-api-authentification.vercel.app/applicatio
 const apiUrl = 'https://code-n-share-api-gateway.vercel.app';
 const filesApi = 'https://code-n-share-api-files.vercel.app';
 
+
 const instance = axios.create({
   baseURL: apiUrl,
   headers: {
@@ -103,7 +104,7 @@ export const getUserFollowing = async (username) => {
 export const followUser = async (followerId, followedId, followerNickname, followedNickname) => {
   try {
     const config = await getConfigWithToken();
-    const response = await instance.post(`${apiUrl}/createFollowing`, {
+    const response = await instance.post(`${apiUrl}/followers/createFollowing`, {
       id_user_follower: followerId,
       id_user_followed: followedId,
       user_nickname_follower: followerNickname,
@@ -119,7 +120,7 @@ export const followUser = async (followerId, followedId, followerNickname, follo
 export const unfollowUser = async (followerId, followedId) => {
   try {
     const config = await getConfigWithToken();
-    const response = await instance.post(`${apiUrl}/Unfollowing`, {
+    const response = await instance.post(`${apiUrl}/followers/Unfollowing`, {
       id_user_follower: followerId,
       id_user_followed: followedId
     }, config);
@@ -144,7 +145,7 @@ export const createFile = async (body) => {
 export const executeFile = async (fileId) => {
   try {
     const config = await getConfigWithToken();
-    const response = await instance.get(`https://code-n-share-api-files.vercel.app/executeFile/${fileId}`, config);
+    const response = await instance.get(`${filesApi}/executeFile/${fileId}`, config);
     console.log('Execution result:', response.data.result);
     return response.data.result;
   } catch (error) {
@@ -156,7 +157,7 @@ export const executeFile = async (fileId) => {
 export const executePipeLine = async (formData) => {
   try {
     const token = await getAuthToken();
-    const response = await instance.post(`http://localhost:4000/executePipeline`, formData, {
+    const response = await instance.post(`${filesApi}/executePipeline`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -222,7 +223,7 @@ export const getPipelineResult = async (idJob) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching results:', error);
-    throw error;
+    return error;
   }
 };
 
@@ -277,18 +278,20 @@ export const unSaveScript = async (id_file, id_user) => {
     throw error;
   }
 };
-export const getSavedScripts = async(id_user) =>{
-  try{
-    const config = await getConfigWithToken();
-    const response = await instance.get(`${apiUrl}/files/savedScripts/${id_user}`,config)
+export const getSavedScripts = async (id_user) => {
+  try {
+    // Effectuez la requête sans configuration supplémentaire
+    const response = await instance.get(`${filesApi}/savedScripts/${id_user}`);
+
+    // Retournez les données de la réponse
     return response.data;
   
-  }catch(error){
-    console.error('erreurlors de recuperations des script'+ error.message)
-    throw error
+  } catch (error) {
+    // Ajoutez plus de détails sur l'erreur
+    console.error('Erreur lors de la récupération des scripts :', error.message);
+    throw error;
   }
-  
-  }
+};
 
 export const deleteFile = async (idFile) => {
   try {

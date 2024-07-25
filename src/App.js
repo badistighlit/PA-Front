@@ -6,8 +6,6 @@ import Loading from "./components/Loading";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import Home from "./views/Home";
-import Profile from "./views/Profile";
-import ExternalApi from "./views/ExternalApi";
 import { useAuth0 } from "@auth0/auth0-react";
 import CommunitiesPage from "./views/CommunitiesPage";
 import CommunityDetails from './views/CommunityDetailsPage';
@@ -45,11 +43,10 @@ const App = () => {
             <Route path="/profile" component={UserProfilePage} />
             <Route path="/newScript" component={CreateScriptPage} />
             <Route path="/newPipeline" component={PipelineExecution} />
-            <Route path="/external-api" component={ExternalApi} />
             <Route path="/favorites" component={FavoritesPage} />
             <Route path="/communities" component={CommunitiesPage} />
             <Route path="/community/:id" component={CommunityDetails} />
-            <Route path="/profileOf/:userId" component={OtherUserProfilePage} /> {/* Route pour le profil d'autres utilisateurs */}
+            <Route path="/profileOf/:userId" component={OtherUserProfilePage} /> {}
                       </Switch>
         </Container>
         <Footer />

@@ -32,6 +32,7 @@ const ScriptResult = styled(Card)`
 const PipelineForm = () => {
   const { user } = useAuth0();
   const [scripts, setScripts] = useState([]);
+  const [filteredScripts, setFilteredScripts] = useState([]);
   const [jobId, setJobId] = useState(null);
   const [results, setResults] = useState([]);
   const [finalResult, setFinalResult] = useState(null);
@@ -44,7 +45,11 @@ const PipelineForm = () => {
         const userScripts = await getAllFilesForUser(user.sub);
         const savedScripts = await getSavedScripts(user.sub);
         const combinedScripts = [...userScripts, ...savedScripts];
+
+        const validScripts = combinedScripts.filter(script => script.fileContent && script.fileContent.trim() !== "" && script.tags && script.tags.trim() !== "" );
+        
         setScripts(combinedScripts);
+        setFilteredScripts(validScripts);
       } catch (error) {
         console.error('Erreur lors de la récupération des scripts', error);
       }
@@ -61,24 +66,30 @@ const PipelineForm = () => {
           console.log("Demande de résultat...");
           const response = await getPipelineResult(jobId);
           console.log("Réponse du pipeline:", response);
-          
+
           if (response.message === 'Job is still processing') {
             console.log('Job is still processing');
+          } else if (response.error) {
+            clearInterval(interval);
+            setIsProcessing(false);
+            console.error('Erreur lors de la récupération des résultats de pipeline:', response.error);
+            // Afficher l'erreur en rouge
+            alert(`Erreur : ${response.error}`);
           } else if (response.returnvalue) {
             clearInterval(interval); 
             setIsProcessing(false);
             const { resultat, idFichierIntermediaire } = response.returnvalue;
             console.log("ID des fichiers intermédiaires:", idFichierIntermediaire);
+            
+            // Set final result and script results
             setFinalResult(resultat);
-
-            // Récupération des fichiers intermédiaires
+            
             let scriptResults = await Promise.all(
               idFichierIntermediaire.map(id => getFileById(id))
             );
-            scriptResults = scriptResults.flat()
-            console.log("Résultats des scripts intermédiaires:", scriptResults[0].fileContent);
+            scriptResults = scriptResults.flat();
+            console.log("Résultats des scripts intermédiaires:", scriptResults);
 
-            // Décodage du contenu de chaque fichier
             const decodedResults = scriptResults.map(result => ({
               ...result,
               decodedContent: result.fileContent ? decodeBase64(result.fileContent) : "Aucun contenu disponible",
@@ -89,13 +100,17 @@ const PipelineForm = () => {
             console.error("La réponse du pipeline n'a pas le format attendu.");
           }
         } catch (error) {
+          clearInterval(interval);
           console.error('Erreur lors de la récupération des résultats de pipeline:', error);
+          setIsProcessing(false);
+          // Afficher l'erreur en rouge
+          alert(`Erreur : ${error.message}`);
         }
-      }, 3000); // Augmenter l'intervalle à 3 secondes pour réduire le nombre d'appels
+      }, 4000); 
     }
     return () => {
       if (interval) {
-        clearInterval(interval); // Nettoyer l'intervalle lors du démontage du composant ou changement de jobId
+        clearInterval(interval); 
       }
     };
   }, [jobId]);
@@ -117,7 +132,6 @@ const PipelineForm = () => {
       formData.append('scriptsId', JSON.stringify(scriptsId));
       formData.append('id_user', user.nickname);
 
-      // Si l'utilisateur a entré du texte, le convertir en fichier
       if (textInput) {
         const blob = new Blob([textInput], { type: 'text/plain' });
         formData.append('file', blob, 'input.txt');
@@ -145,11 +159,9 @@ const PipelineForm = () => {
     setFieldValue('inputFile', acceptedFiles[0]);
   };
 
-  // Fonction pour décoder le contenu base64
   const decodeBase64 = (base64) => {
     try {
       if (typeof base64 === 'string') {
-        // Assurez-vous que la chaîne est correctement encodée en base64
         const padding = base64.length % 4;
         if (padding > 0) {
           base64 += '='.repeat(4 - padding);
@@ -163,6 +175,10 @@ const PipelineForm = () => {
       return "Erreur lors du décodage";
     }
   };
+
+  // Filtrer les résultats intermédiaires en excluant le dernier
+  const intermediateResults = results.slice(0, -1);
+  const finalResultContent = results.length > 0 ? results[results.length - 1].decodedContent : null;
 
   return (
     <FormContainer>
@@ -198,7 +214,7 @@ const PipelineForm = () => {
                                 onBlur={handleBlur}
                               >
                                 <option value="">Sélectionnez un script</option>
-                                {scripts.map(script => (
+                                {filteredScripts.map(script => (
                                   <option key={script.id_file} value={script.id_file}>
                                     {script.tags}
                                   </option>
@@ -274,9 +290,14 @@ const PipelineForm = () => {
         )}
       </Formik>
 
-      {isProcessing && <Spinner color="primary" style={{ marginTop: '20px' }}>Pipeline en cours d'exécution...</Spinner>}
+      {isProcessing && (
+        <div style={{ marginTop: '20px' }}>
+          <Spinner color="primary" />
+          <CardTitle tag="h5">Pipeline en cours d'exécution...</CardTitle>
+        </div>
+      )}
 
-      {results.length > 0 && results.map((result, index) => (
+      {intermediateResults.length > 0 && intermediateResults.map((result, index) => (
         <ScriptResult key={index}>
           <CardBody>
             <CardTitle tag="h5">Résultat du script {index + 1} :</CardTitle>
@@ -287,12 +308,12 @@ const PipelineForm = () => {
         </ScriptResult>
       ))}
 
-      {finalResult && (
+      {finalResultContent && (
         <ScriptResult>
           <CardBody>
             <CardTitle tag="h5">Résultat final :</CardTitle>
             <CardText>
-              <pre>{finalResult}</pre>
+              <pre>{finalResultContent}</pre>
             </CardText>
           </CardBody>
         </ScriptResult>

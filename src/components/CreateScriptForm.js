@@ -31,7 +31,6 @@ const CreateScriptForm = ({ idCommunity, onSuccess }) => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' ou 'error'
 
-  // Log pour vérifier si idCommunity est bien passé
   useEffect(() => {
     console.log("idCommunity dans CreateScriptForm:", idCommunity);
   }, [idCommunity]);
@@ -42,7 +41,7 @@ const CreateScriptForm = ({ idCommunity, onSuccess }) => {
       isScript: false,
       scriptLanguage: '',
       takesInput: false,
-      inputType: '',
+      inputType: '',  // Changed to select
       tags: '',
     },
     validationSchema: Yup.object({
@@ -96,9 +95,9 @@ const CreateScriptForm = ({ idCommunity, onSuccess }) => {
         if (response.data) {
           setMessage(idCommunity ? 'Publication dans la communauté réussie !' : 'Fichier créé avec succès !');
           setMessageType('success');
-          formik.resetForm(); // Réinitialise le formulaire
-          setUploadedFile(null); // Réinitialise le fichier uploadé
-          if (onSuccess) onSuccess(); // Appel de la fonction de rappel après succès
+          formik.resetForm(); 
+          setUploadedFile(null); 
+          if (onSuccess) onSuccess(); 
         } else {
           throw new Error('Erreur lors de la création du fichier');
         }
@@ -112,7 +111,7 @@ const CreateScriptForm = ({ idCommunity, onSuccess }) => {
 
   const onDrop = (acceptedFiles) => {
     setUploadedFile(acceptedFiles[0]);
-    console.log('Accepted File:', acceptedFiles[0]); // Vérification du fichier accepté
+    console.log('Accepted File:', acceptedFiles[0]); 
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -212,14 +211,17 @@ const CreateScriptForm = ({ idCommunity, onSuccess }) => {
             <Label for="inputType" sm={2}>Type d'entrée</Label>
             <Col sm={10}>
               <Input
-                type="text"
+                type="select"
                 name="inputType"
                 id="inputType"
-                placeholder="Entrez le type d'entrée"
                 value={formik.values.inputType}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-              />
+              >
+                <option value="">Sélectionnez un type d'entrée</option>
+                <option value="txt">Texte (txt)</option>
+                <option value="png">Image (png)</option>
+              </Input>
               {formik.touched.inputType && formik.errors.inputType ? (
                 <div className="text-danger">{formik.errors.inputType}</div>
               ) : null}

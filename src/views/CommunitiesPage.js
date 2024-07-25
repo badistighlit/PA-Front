@@ -1,7 +1,55 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getCommunities, joinCommunity, getCommunitiesOfUser, createCommunity } from '../API requests/Get'; 
+import { getCommunities, joinCommunity, getCommunitiesOfUser, createCommunity, getUsersOfCommunity } from '../API requests/Get'; 
 import { useAuth0 } from '@auth0/auth0-react';
+import styled from 'styled-components';
+import { Spinner, Alert, CardTitle } from 'reactstrap';  
+const PageContainer = styled.div`
+  padding: 20px;
+  background-color: #f4f4f4;
+`;
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin-top: 20px;
+`;
+const CommunityList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+`;
+
+const CommunityItem = styled.li`
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const CommunityName = styled.span`
+  font-size: 18px;
+  font-weight: bold;
+`;
+
+const Button = styled.button`
+  background: ${(props) => (props.disabled ? '#ddd' : '#007bff')};
+  color: ${(props) => (props.disabled ? '#666' : '#fff')};
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: ${(props) => (props.disabled ? '#ddd' : '#0056b3')};
+  }
+`;
 
 const CommunitiesPage = () => {
   const { user, isLoading: authLoading } = useAuth0();
@@ -9,8 +57,9 @@ const CommunitiesPage = () => {
   const [userCommunities, setUserCommunities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(null);
-  const [creating, setCreating] = useState(false); // State for creating a new community
-  const [newCommunityName, setNewCommunityName] = useState(""); // State for new community name
+  const [creating, setCreating] = useState(false); 
+  const [newCommunityName, setNewCommunityName] = useState(""); 
+  const [userCounts, setUserCounts] = useState({}); // Track user counts
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -19,10 +68,19 @@ const CommunitiesPage = () => {
           getCommunities(),
           getCommunitiesOfUser(user.sub)
         ]);
-        console.log('Community data:', communityData); // Debugging
+        console.log('Community data:', communityData); 
         setCommunities(communityData);
-        console.log('User communities:', userCommunityData); // Debugging
+        console.log('User communities:', userCommunityData);
         setUserCommunities(userCommunityData.map(c => c.id_community));
+
+        // Fetch user counts for each community
+        const counts = await Promise.all(
+          communityData.map(async (community) => {
+            const users = await getUsersOfCommunity(community.id);
+            return { id: community.id, count: users.length };
+          })
+        );
+        setUserCounts(counts.reduce((acc, { id, count }) => ({ ...acc, [id]: count }), {}));
       } catch (error) {
         console.error('Error fetching communities:', error);
       } finally {
@@ -65,46 +123,52 @@ const CommunitiesPage = () => {
   };
 
   if (authLoading || loading) {
-    return <div>Loading...</div>;
+    return      <LoadingContainer>
+    <Spinner color="primary" />
+    <CardTitle tag="h5">Chargement...</CardTitle>
+  </LoadingContainer>
   }
 
   return (
-    <div>
+    <PageContainer>
       <h1>Communities</h1>
-      <button onClick={() => setCreating(!creating)}>
+      <Button onClick={() => setCreating(!creating)}>
         {creating ? 'Cancel' : 'Create New Community'}
-      </button>
+      </Button>
       {creating && (
-        <div>
+        <div style={{ marginTop: '20px' }}>
           <input 
             type="text" 
             value={newCommunityName} 
             onChange={(e) => setNewCommunityName(e.target.value)} 
             placeholder="Community Name" 
           />
-          <button onClick={handleCreateCommunity} disabled={!newCommunityName}>
+          <Button onClick={handleCreateCommunity} disabled={!newCommunityName}>
             Create
-          </button>
+          </Button>
         </div>
       )}
-      <ul>
+      <CommunityList>
         {communities.map((community) => (
-          <li key={community.id}>
-            <Link to={`/community/${community.id}`}>{community.name}</Link>
+          <CommunityItem key={community.id}>
+            <CommunityName>
+              <Link to={`/community/${community.id}`}>{community.name}</Link>
+            </CommunityName>
+            <span>{userCounts[community.id] || 0} users</span>
             {userCommunities.includes(community.id) ? (
-              <button disabled>Already in this community</button>
+              <Button disabled>Already in this community</Button>
             ) : (
-              <button 
+              <Button 
                 onClick={() => handleJoinCommunity(community.id)}
                 disabled={joining === community.id}
               >
                 {joining === community.id ? 'Joining...' : 'Join'}
-              </button>
+              </Button>
             )}
-          </li>
+          </CommunityItem>
         ))}
-      </ul>
-    </div>
+      </CommunityList>
+    </PageContainer>
   );
 };
 

@@ -1,0 +1,39 @@
+/* Navbar.css */
+
+.custom-navbar {
+    background-color: #01002a !important; /* Couleur de fond de la navbar */
+  }
+  
+  .custom-navbar .logo {
+    height: 50px; /* Ajustez la hauteur du logo selon vos besoins */
+  }
+  
+  .custom-navbar .nav-link {
+    color: #ffffff; /* Couleur blanche pour les liens */
+  }
+  
+  .custom-navbar .nav-link:hover {
+    color: #e0e0e0; /* Couleur claire pour les liens au survol */
+  }
+  
+  .custom-navbar .dropdown-menu {
+    background-color: #01002a; /* Couleur de fond du menu déroulant */
+  }
+  
+  .custom-navbar .dropdown-item {
+    color: #ffffff; /* Couleur blanche pour les éléments du menu déroulant */
+  }
+  
+  .custom-navbar .dropdown-item:hover {
+    background-color: #e0e0e0; /* Couleur de fond des éléments du menu déroulant au survol */
+    color: #01002a; /* Couleur du texte au survol */
+  }
+  
+  .nav-user-profile {
+    border: 2px solid #ffffff; /* Bordure blanche autour de l'image du profil */
+  }
+  
+  .user-info h6 {
+    color: #ffffff; /* Couleur blanche du texte du nom d'utilisateur dans le menu mobile */
+  }
+  

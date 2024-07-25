@@ -97,7 +97,7 @@ const OtherUserProfilePage = () => {
       <Row>
         <Col>
           <h3>Fichiers:</h3>
-          <ProfileFeedComponent userId={userId} /> {/* Passe l'ID de l'autre utilisateur */}
+          <ProfileFeedComponent userId={userId} /> {}
         </Col>
       </Row>
     </Container>

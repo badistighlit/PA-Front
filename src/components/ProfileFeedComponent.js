@@ -1,7 +1,7 @@
 // src/components/ProfileFeedComponent.js
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { getAllFilesForUser, deleteFile } from '../API requests/Get'; // Assure-toi que le chemin est correct
+import { getAllFilesForUser, deleteFile } from '../API requests/Get'; 
 import PostComponent from './PostComponent';
 
 const ProfileContainer = styled.div`

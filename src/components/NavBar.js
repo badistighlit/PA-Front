@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import '../css/Navbar.css'
 import {
   Collapse,
   Container,
@@ -19,15 +19,11 @@ import {
 } from "reactstrap";
 
 import { useAuth0 } from "@auth0/auth0-react";
+import { ReactComponent as Logo } from '../assets/logo.svg'; 
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const {
-    user,
-    isAuthenticated,
-    loginWithRedirect,
-    logout,
-  } = useAuth0();
+  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
   const toggle = () => setIsOpen(!isOpen);
 
   const logoutWithRedirect = () =>
@@ -39,9 +35,11 @@ const NavBar = () => {
 
   return (
     <div className="nav-container">
-      <Navbar color="light" light expand="md" container={false}>
+      <Navbar className="custom-navbar" expand="md">
         <Container>
-          <NavbarBrand className="logo" />
+          <NavbarBrand>
+            <Logo className="logo" /> {/* Utiliser le logo SVG ici */}
+          </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
             <Nav className="mr-auto" navbar>
@@ -51,69 +49,60 @@ const NavBar = () => {
                   to="/"
                   exact
                   activeClassName="router-link-exact-active"
+                  style={{ color: '#ffffff' }} 
                 >
                   Home
+                  
                 </NavLink>
               </NavItem>
-
-              <NavItem>
-              {isAuthenticated &&(
-                <NavLink
-                  tag={RouterNavLink}
-                  to="/newPipeline"
-                  exact
-                  activeClassName="router-link-exact-active"
-                >
-                  Pipeline
-                </NavLink>)}
-              </NavItem>
               {isAuthenticated && (
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/newScript"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-                    nouveau code
-                  </NavLink>
-
-                </NavItem>
-                
-                
-                
-                
-                
+                <>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/newPipeline"
+                      exact
+                      activeClassName="router-link-exact-active"
+                      style={{ color: '#ffffff' }} 
+                    >
+                      Pipeline
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/newScript"
+                      exact
+                      activeClassName="router-link-exact-active"
+                      style={{ color: '#ffffff' }} 
+                    >
+                      Nouveau Code
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/communities"
+                      exact
+                      activeClassName="router-link-exact-active"
+                      style={{ color: '#ffffff' }} 
+                    >
+                      Communities
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/favorites"
+                      exact
+                      activeClassName="router-link-exact-active"
+                      style={{ color: '#ffffff' }} 
+                    >
+                      Scripts Favoris
+                    </NavLink>
+                  </NavItem>
+                </>
               )}
-                            {isAuthenticated && (
-                <NavItem>
-                  <NavLink
-                    tag={RouterNavLink}
-                    to="/communities"
-                    exact
-                    activeClassName="router-link-exact-active"
-                  >
-communities                  </NavLink>
-
-                </NavItem>
-                
-                
-                
-                
-                
-              )}
-
-            <NavItem>
-              {isAuthenticated &&(
-                <NavLink
-                  tag={RouterNavLink}
-                  to="/favorites"
-                  exact
-                  activeClassName="router-link-exact-active"
-                >
-                  Scripts favoris
-                </NavLink>)}
-              </NavItem>
             </Nav>
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (
@@ -123,6 +112,7 @@ communities                  </NavLink>
                     color="primary"
                     className="btn-margin"
                     onClick={() => loginWithRedirect()}
+                    style={{ color: '#ffffff' }} 
                   >
                     Log in
                   </Button>
@@ -145,6 +135,7 @@ communities                  </NavLink>
                       to="/profile"
                       className="dropdown-profile"
                       activeClassName="router-link-exact-active"
+                      style={{ color: '#ffffff' }} 
                     >
                       <FontAwesomeIcon icon="user" className="mr-3" /> Profile
                     </DropdownItem>

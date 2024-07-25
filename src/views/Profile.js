@@ -5,70 +5,68 @@ import Loading from "../components/Loading";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { getAllFilesForUser, executeFile, getUserFollowers, getUserFollowing } from "../API requests/Get.js";
 
-// Exemple de fonction simulateur d'exécution de fichier
-// Remplacez cette fonction par l'appel réel à votre API d'exécution
+
 
 const ProfileComponent = () => {
   const { user } = useAuth0(); // Utilisation du hook Auth0 pour obtenir les informations utilisateur
-  const [files, setFiles] = useState([]); // État pour les fichiers, initialisé à un tableau vide
-  const [loading, setLoading] = useState(true); // État pour le chargement
-  const [error, setError] = useState(null); // État pour les erreurs
-  const [executionResults, setExecutionResults] = useState({}); // État pour les résultats d'exécution
-  const [followers, setFollowers] = useState([]); // État pour les followers
-  const [following, setFollowing] = useState([]); // État pour les followings
+  const [files, setFiles] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); 
+  const [executionResults, setExecutionResults] = useState({});
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]); 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const filesData = await getAllFilesForUser(user.nickname); // Appel API pour obtenir les fichiers
-        setFiles(filesData); // Mise à jour de l'état des fichiers
+        const filesData = await getAllFilesForUser(user.nickname); 
+        setFiles(filesData); 
+        const followersData = await getUserFollowers(user.nickname); 
+        setFollowers(followersData); 
 
-        const followersData = await getUserFollowers(user.nickname); // Appel API pour obtenir les followers
-        setFollowers(followersData); // Mise à jour de l'état des followers
-
-        const followingData = await getUserFollowing(user.nickname); // Appel API pour obtenir les followings
-        setFollowing(followingData); // Mise à jour de l'état des followings
+        const followingData = await getUserFollowing(user.nickname);
+        setFollowing(followingData); 
       } catch (error) {
-        setError(error); // Gestion des erreurs
+        setError(error);
       } finally {
-        setLoading(false); // Fin du chargement
+        setLoading(false);
       }
     };
 
-    fetchData(); // Appel de la fonction asynchrone
-  }, [user.nickname]); // Dépendance de useEffect
+    fetchData();
+  }, [user.nickname]);
 
-  if (loading) return <Loading />; // Affichage du chargement
-  if (error) return <p>Error loading data: {error.message}</p>; // Affichage de l'erreur s'il y en a une
+  if (loading) return <Loading />;
+  if (error) return <p>Error loading data: {error.message}</p>;
 
-  // Fonction pour décoder le contenu Base64
+
   const decodeBase64 = (base64String) => {
     try {
-      return atob(base64String); // Décodage de la chaîne Base64
+      return atob(base64String); 
     } catch (error) {
       console.error("Error decoding Base64:", error);
-      return "Invalid Base64 content"; // Retourne un message d'erreur si le décodage échoue
+      return "Invalid Base64 content";
     }
   };
 
-  // Fonction pour gérer l'exécution du fichier
+
   const handleExecuteFile = async (fileId) => {
     setExecutionResults((prevResults) => ({
       ...prevResults,
-      [fileId]: "Executing...", // Affiche un message de chargement avant l'exécution
+      [fileId]: "Executing...", 
     }));
 
     try {
-      const result = await executeFile(fileId); // Exécuter le fichier en utilisant son ID
+      const result = await executeFile(fileId); 
       setExecutionResults((prevResults) => ({
         ...prevResults,
-        [fileId]: result, // Mettre à jour le résultat de l'exécution
+        [fileId]: result, 
       }));
     } catch (error) {
       console.error("Error executing file:", error);
       setExecutionResults((prevResults) => ({
         ...prevResults,
-        [fileId]: "Error executing file", // Mettre à jour l'état en cas d'erreur
+        [fileId]: "Error executing file", 
       }));
     }
   };
@@ -136,7 +134,7 @@ const ProfileComponent = () => {
   );
 };
 
-// Utilisation de withAuthenticationRequired pour protéger le composant par l'authentification
+
 export default withAuthenticationRequired(ProfileComponent, {
   onRedirecting: () => <Loading />,
 });

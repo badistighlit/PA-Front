@@ -5,21 +5,21 @@ import CreateScriptForm from '../components/CreateScriptForm';
 import PostComponent from '../components/PostComponent';
 
 const CommunityDetails = () => {
-  const { id } = useParams(); // Récupère l'ID de la communauté depuis les paramètres de la route
+  const { id } = useParams(); 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showForm, setShowForm] = useState(false); // État pour afficher/masquer le formulaire
+  const [showForm, setShowForm] = useState(false);
 
   const fetchPosts = async () => {
     try {
       console.log("community id : " + id);
-      const data = await getFeedCommunity(id); // Utilise l'ID pour récupérer les posts
+      const data = await getFeedCommunity(id); 
 
-      // Si vos données sont un tableau de tableaux, vous devez les aplatir
+     
       const flattenedData = data.flat();
 
-      // Trier les posts par date de création du plus récent au plus ancien
+   
       const sortedData = flattenedData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
       setPosts(sortedData);
@@ -32,7 +32,7 @@ const CommunityDetails = () => {
   };
 
   useEffect(() => {
-    if (id) { // Vérifie que l'ID est défini avant de faire la demande
+    if (id) { 
       fetchPosts();
     }
   }, [id]);
@@ -44,12 +44,12 @@ const CommunityDetails = () => {
     <div>
       <h1>Community Details</h1>
       
-      {/* Bouton pour afficher/masquer le formulaire */}
+      {}
       <button onClick={() => setShowForm(prev => !prev)}>
         {showForm ? 'Cancel' : 'New Script'}
       </button>
 
-      {/* Affichage conditionnel du formulaire */}
+      {}
       {showForm && <CreateScriptForm idCommunity={id} onSuccess={() => fetchPosts()} />}
 
       {posts.length ? (

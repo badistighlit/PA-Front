@@ -1,10 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col } from "reactstrap";
-import Highlight from "../components/Highlight";
+import { Container, Row, Col, Card, CardBody, CardTitle, CardText } from "reactstrap";
 import Loading from "../components/Loading";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import ProfileFeedComponent from "../components/ProfileFeedComponent";
 import { getUserFollowers, getUserFollowing } from "../API requests/Get.js";
+import styled from 'styled-components';
+
+// Style personnalisé pour la carte d'informations de l'utilisateur
+const UserInfoCard = styled(Card)`
+  margin-bottom: 20px;
+  background-color: #000;  // Fond noir
+  color: #fff;  // Texte blanc
+  padding: 20px;  // Ajoute du padding pour un meilleur aspect
+`;
+
+const CardTitleStyled = styled(CardTitle)`
+  color: #00ff00;  // Intitulés en vert
+  margin-bottom: 15px;  // Espace sous le titre
+`;
+
+const InfoRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;  // Espace entre les lignes
+  padding: 5px;  // Padding interne
+  background-color: #1c1c1c;  // Fond légèrement plus clair pour les lignes
+  border-radius: 5px;  // Coins arrondis pour les lignes
+`;
+
+const InfoLabel = styled.span`
+  color: #00ff00;  // Intitulés en vert
+  font-weight: bold;
+`;
+
+const InfoValue = styled.span`
+  color: #fff;  // Valeurs en blanc
+`;
 
 const UserProfilePage = () => {
   const { user } = useAuth0();
@@ -16,8 +47,8 @@ const UserProfilePage = () => {
   useEffect(() => {
     const fetchFollowersAndFollowing = async () => {
       try {
-        const followersData = await getUserFollowers(user.nickname);
-        const followingData = await getUserFollowing(user.nickname);
+        const followersData = await getUserFollowers(user.sub);
+        const followingData = await getUserFollowing(user.sub);
         setFollowers(followersData);
         setFollowing(followingData);
       } catch (error) {
@@ -49,30 +80,74 @@ const UserProfilePage = () => {
         </Col>
       </Row>
       <Row>
-        <Highlight>{JSON.stringify(user, null, 2)}</Highlight>
+        <Col>
+          <UserInfoCard>
+            <CardBody>
+              <CardTitleStyled tag="h5">User Information</CardTitleStyled>
+              <InfoRow>
+                <InfoLabel>Given Name:</InfoLabel>
+                <InfoValue>{user.given_name}</InfoValue>
+              </InfoRow>
+              <InfoRow>
+                <InfoLabel>Family Name:</InfoLabel>
+                <InfoValue>{user.family_name}</InfoValue>
+              </InfoRow>
+              <InfoRow>
+                <InfoLabel>Nickname:</InfoLabel>
+                <InfoValue>{user.nickname}</InfoValue>
+              </InfoRow>
+              <InfoRow>
+                <InfoLabel>Name:</InfoLabel>
+                <InfoValue>{user.name}</InfoValue>
+              </InfoRow>
+              <InfoRow>
+                <InfoLabel>Email:</InfoLabel>
+                <InfoValue>{user.email}</InfoValue>
+              </InfoRow>
+            </CardBody>
+          </UserInfoCard>
+        </Col>
       </Row>
       <Row>
         <Col>
           <h3>Followers:</h3>
-          <p>
-            <a href={`/followers/${user.nickname}`}>{followers.length}</a>
-          </p>
+          <ul className="list-unstyled">
+            {followers.map(follower => (
+              <li key={follower.nickname} className="d-flex align-items-center mb-2">
+                <img
+                  src={follower.picture}
+                  alt={follower.nickname}
+                  className="rounded-circle mr-2"
+                  style={{ width: '40px', height: '40px' }}
+                />
+                <span>{follower.nickname}</span>
+              </li>
+            ))}
+          </ul>
         </Col>
         <Col>
           <h3>Following:</h3>
-          <p>
-            <a href={`/following/${user.nickname}`}>{following.length}</a>
-          </p>
+          <ul className="list-unstyled">
+            {following.map(followingUser => (
+              <li key={followingUser.nickname} className="d-flex align-items-center mb-2">
+                <img
+                  src={followingUser.picture}
+                  alt={followingUser.nickname}
+                  className="rounded-circle mr-2"
+                  style={{ width: '40px', height: '40px' }}
+                />
+                <span>{followingUser.nickname}</span>
+              </li>
+            ))}
+          </ul>
         </Col>
       </Row>
       <Row>
         <Col>
           <h3>Mes Fichiers:</h3>
-          <ProfileFeedComponent userId={user.sub} /> {/* Passe l'ID de l'utilisateur connecté */}
-  
+          <ProfileFeedComponent userId={user.sub} />
         </Col>
       </Row>
-
     </Container>
   );
 };

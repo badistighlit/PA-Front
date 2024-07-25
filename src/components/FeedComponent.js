@@ -1,4 +1,3 @@
-// src/components/FeedComponent.js
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { getFeedForUser } from '../API requests/Get';
