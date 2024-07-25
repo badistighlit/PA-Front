@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import '../css/Navbar.css'
+import '../css/Navbar.css';
 import {
   Collapse,
   Container,
@@ -19,7 +19,6 @@ import {
 } from "reactstrap";
 
 import { useAuth0 } from "@auth0/auth0-react";
-import { ReactComponent as Logo } from '../assets/logo.svg'; 
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,24 +34,22 @@ const NavBar = () => {
 
   return (
     <div className="nav-container">
-      <Navbar className="custom-navbar" expand="md">
+      <Navbar className="custom-navbar fixed-top" expand="md">
         <Container>
-          <NavbarBrand>
-            <Logo className="logo" /> {/* Utiliser le logo SVG ici */}
+          <NavbarBrand className="d-flex align-items-center">
+            <img src="/logo codnshare.png" alt="Logo" className="logo" />
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="mr-auto" navbar>
+            <Nav className="ml-auto" navbar>
               <NavItem>
                 <NavLink
                   tag={RouterNavLink}
                   to="/"
                   exact
                   activeClassName="router-link-exact-active"
-                  style={{ color: '#ffffff' }} 
                 >
                   Home
-                  
                 </NavLink>
               </NavItem>
               {isAuthenticated && (
@@ -63,7 +60,6 @@ const NavBar = () => {
                       to="/newPipeline"
                       exact
                       activeClassName="router-link-exact-active"
-                      style={{ color: '#ffffff' }} 
                     >
                       Pipeline
                     </NavLink>
@@ -74,7 +70,6 @@ const NavBar = () => {
                       to="/newScript"
                       exact
                       activeClassName="router-link-exact-active"
-                      style={{ color: '#ffffff' }} 
                     >
                       Nouveau Code
                     </NavLink>
@@ -85,7 +80,6 @@ const NavBar = () => {
                       to="/communities"
                       exact
                       activeClassName="router-link-exact-active"
-                      style={{ color: '#ffffff' }} 
                     >
                       Communities
                     </NavLink>
@@ -96,7 +90,6 @@ const NavBar = () => {
                       to="/favorites"
                       exact
                       activeClassName="router-link-exact-active"
-                      style={{ color: '#ffffff' }} 
                     >
                       Scripts Favoris
                     </NavLink>
@@ -112,7 +105,6 @@ const NavBar = () => {
                     color="primary"
                     className="btn-margin"
                     onClick={() => loginWithRedirect()}
-                    style={{ color: '#ffffff' }} 
                   >
                     Log in
                   </Button>
@@ -135,7 +127,6 @@ const NavBar = () => {
                       to="/profile"
                       className="dropdown-profile"
                       activeClassName="router-link-exact-active"
-                      style={{ color: '#ffffff' }} 
                     >
                       <FontAwesomeIcon icon="user" className="mr-3" /> Profile
                     </DropdownItem>

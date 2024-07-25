@@ -1,12 +1,24 @@
-// src/pages/OtherUserProfilePage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Row, Col, Button } from "reactstrap";
-import Highlight from "../components/Highlight";
+import { Container, Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap";
 import Loading from "../components/Loading";
 import ProfileFeedComponent from "../components/ProfileFeedComponent";
 import { getUserById, getUserFollowers, getUserFollowing, followUser, unfollowUser } from "../API requests/Get";
 import { useAuth0 } from "@auth0/auth0-react";
+import styled from 'styled-components';
+
+// Style personnalisé pour la carte de section
+const SectionCard = styled(Card)`
+  background-color: #1c1c1c;
+  color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+`;
+
+const CardTitleStyled = styled(CardTitle)`
+  color: #00ff00;
+  margin-bottom: 15px;
+`;
 
 const OtherUserProfilePage = () => {
   const { user } = useAuth0();
@@ -24,10 +36,17 @@ const OtherUserProfilePage = () => {
         const profileData = await getUserById(userId);
         const followersData = await getUserFollowers(userId);
         const followingData = await getUserFollowing(userId);
+        
         setProfileUser(profileData);
         setFollowers(followersData);
         setFollowing(followingData);
-        setIsFollowing(followingData.some(followingUser => followingUser.id === user.sub));
+
+        // Vérifier si user.sub figure dans la liste des followers ou si user_nickname_following correspond à user.sub
+        const isUserFollowing = followersData.some(followingUser => 
+          followingUser.id_user_following === user.sub || 
+          followingUser.user_nickname_following === user.nickname
+        );
+        setIsFollowing(isUserFollowing);
       } catch (error) {
         setError(error);
       } finally {
@@ -36,7 +55,7 @@ const OtherUserProfilePage = () => {
     };
 
     fetchProfileData();
-  }, [userId, user.sub]);
+  }, [userId, user.sub, user.nickname]);
 
   const handleFollowToggle = async () => {
     try {
@@ -78,26 +97,27 @@ const OtherUserProfilePage = () => {
         </Col>
       </Row>
       <Row>
-        <Highlight>{JSON.stringify(profileUser, null, 2)}</Highlight>
-      </Row>
-      <Row>
-        <Col>
-          <h3>Followers:</h3>
-          <p>
-            <a href={`/followers/${profileUser.nickname}`}>{followers.length}</a>
-          </p>
+        <Col md={6}>
+          <SectionCard>
+            <CardBody>
+              <CardTitleStyled tag="h5">Followers</CardTitleStyled>
+              <p>Total: {followers.length}</p>
+            </CardBody>
+          </SectionCard>
         </Col>
-        <Col>
-          <h3>Following:</h3>
-          <p>
-            <a href={`/following/${profileUser.nickname}`}>{following.length}</a>
-          </p>
+        <Col md={6}>
+          <SectionCard>
+            <CardBody>
+              <CardTitleStyled tag="h5">Following</CardTitleStyled>
+              <p>Total: {following.length}</p>
+            </CardBody>
+          </SectionCard>
         </Col>
       </Row>
       <Row>
         <Col>
           <h3>Fichiers:</h3>
-          <ProfileFeedComponent userId={userId} /> {}
+          <ProfileFeedComponent userId={userId} />
         </Col>
       </Row>
     </Container>

@@ -1,39 +1,67 @@
-/* Navbar.css */
-
 .custom-navbar {
     background-color: #01002a !important; /* Couleur de fond de la navbar */
-  }
-  
-  .custom-navbar .logo {
-    height: 50px; /* Ajustez la hauteur du logo selon vos besoins */
-  }
-  
-  .custom-navbar .nav-link {
-    color: #ffffff; /* Couleur blanche pour les liens */
-  }
-  
-  .custom-navbar .nav-link:hover {
-    color: #e0e0e0; /* Couleur claire pour les liens au survol */
-  }
-  
-  .custom-navbar .dropdown-menu {
+    height: 60px; /* Hauteur de la navbar */
+    padding: 0; /* Supprime le padding interne */
+    display: flex;
+    align-items: center; /* Centre verticalement les éléments */
+    justify-content: flex-start; /* Aligne tous les éléments à gauche */
+}
+
+.custom-navbar .navbar-brand {
+    display: flex;
+    align-items: center; /* Centre verticalement le logo */
+    margin-right: 1rem; /* Réduit l'espace entre le logo et les éléments de navigation */
+}
+
+.custom-navbar .logo {
+    height: -30; /* Ajuste la hauteur du logo */
+}
+
+.custom-navbar .nav {
+    display: flex;
+    align-items: center; /* Aligne les éléments de navigation verticalement */
+    margin: 0; /* Supprime la marge des éléments de navigation */
+}
+
+.custom-navbar .nav-item {
+    margin: 0; /* Supprime la marge des éléments de navigation */
+}
+
+.custom-navbar .nav-link {
+    color: #ffffff; /* Couleur des liens */
+    padding: 0.25rem 0.75rem; /* Padding des liens */
+    height: 50%; /* Remplit la hauteur de la navbar */
+    display: flex;
+    align-items: center; /* Aligne le texte des liens verticalement */
+}
+
+.custom-navbar .nav-link:hover {
+    color: #e0e0e0; /* Couleur des liens au survol */
+}
+
+.custom-navbar .dropdown-menu {
     background-color: #01002a; /* Couleur de fond du menu déroulant */
-  }
-  
-  .custom-navbar .dropdown-item {
-    color: #ffffff; /* Couleur blanche pour les éléments du menu déroulant */
-  }
-  
-  .custom-navbar .dropdown-item:hover {
+}
+
+.custom-navbar .dropdown-item {
+    color: #ffffff; /* Couleur des éléments du menu déroulant */
+}
+
+.custom-navbar .dropdown-item:hover {
     background-color: #e0e0e0; /* Couleur de fond des éléments du menu déroulant au survol */
     color: #01002a; /* Couleur du texte au survol */
-  }
-  
-  .nav-user-profile {
+}
+
+.nav-user-profile {
     border: 2px solid #ffffff; /* Bordure blanche autour de l'image du profil */
-  }
-  
-  .user-info h6 {
-    color: #ffffff; /* Couleur blanche du texte du nom d'utilisateur dans le menu mobile */
-  }
-  
+    height: 40px; /* Hauteur de l'image du profil */
+}
+
+.user-info h6 {
+    color: #ffffff; /* Couleur du texte du nom d'utilisateur dans le menu mobile */
+    margin: 0; /* Supprime la marge */
+}
+
+.navbar-toggler {
+    margin-left: auto; /* Aligne le toggler à droite */
+}

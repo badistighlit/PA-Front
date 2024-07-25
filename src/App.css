@@ -1,8 +1,12 @@
+body {
+  background-color: #bde0ff; 
+}
+
 .next-steps .fa-link {
   margin-right: 5px;
 }
 
-/* Fix for use only flexbox in content area */
+
 .next-steps .row {
   margin-bottom: 0;
 }
@@ -32,4 +36,15 @@
 
 .result-block-container .result-block {
   opacity: 1;
+}
+.footer {
+  background-color: #01002a; /* Couleur de fond identique à celle de la navbar */
+  color: #ffffff; /* Couleur du texte pour contraste avec le fond sombre */
+  padding: 1rem; /* Ajustez le padding selon vos besoins */
+  text-align: center; /* Centre le texte dans le footer */
+}
+
+.footer .logo {
+  height: 40px; /* Hauteur du logo dans le footer, ajustez selon vos besoins */
+  margin-bottom: 10px; /* Marge sous le logo pour espacer du texte */
 }

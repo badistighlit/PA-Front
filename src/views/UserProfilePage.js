@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, CardBody, CardTitle, CardText } from "reactstrap";
+import { Container, Row, Col, Card, CardBody, CardTitle } from "reactstrap";
 import Loading from "../components/Loading";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import ProfileFeedComponent from "../components/ProfileFeedComponent";
@@ -37,6 +37,13 @@ const InfoValue = styled.span`
   color: #fff;  // Valeurs en blanc
 `;
 
+const SectionCard = styled(Card)`
+  background-color: #1c1c1c;
+  color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+`;
+
 const UserProfilePage = () => {
   const { user } = useAuth0();
   const [followers, setFollowers] = useState([]);
@@ -59,7 +66,7 @@ const UserProfilePage = () => {
     };
 
     fetchFollowersAndFollowing();
-  }, [user.nickname]);
+  }, [user.sub]);
 
   if (loading) return <Loading />;
   if (error) return <p>Error loading data: {error.message}</p>;
@@ -109,42 +116,26 @@ const UserProfilePage = () => {
         </Col>
       </Row>
       <Row>
-        <Col>
-          <h3>Followers:</h3>
-          <ul className="list-unstyled">
-            {followers.map(follower => (
-              <li key={follower.nickname} className="d-flex align-items-center mb-2">
-                <img
-                  src={follower.picture}
-                  alt={follower.nickname}
-                  className="rounded-circle mr-2"
-                  style={{ width: '40px', height: '40px' }}
-                />
-                <span>{follower.nickname}</span>
-              </li>
-            ))}
-          </ul>
+        <Col md={6}>
+          <SectionCard>
+            <CardBody>
+              <CardTitleStyled tag="h5">Followers</CardTitleStyled>
+              <p>Total: {followers.length}</p>
+            </CardBody>
+          </SectionCard>
         </Col>
-        <Col>
-          <h3>Following:</h3>
-          <ul className="list-unstyled">
-            {following.map(followingUser => (
-              <li key={followingUser.nickname} className="d-flex align-items-center mb-2">
-                <img
-                  src={followingUser.picture}
-                  alt={followingUser.nickname}
-                  className="rounded-circle mr-2"
-                  style={{ width: '40px', height: '40px' }}
-                />
-                <span>{followingUser.nickname}</span>
-              </li>
-            ))}
-          </ul>
+        <Col md={6}>
+          <SectionCard>
+            <CardBody>
+              <CardTitleStyled tag="h5">Following</CardTitleStyled>
+              <p>Total: {following.length}</p>
+            </CardBody>
+          </SectionCard>
         </Col>
       </Row>
       <Row>
         <Col>
-          <h3>Mes Fichiers:</h3>
+          <h3>Mes Scripts:</h3>
           <ProfileFeedComponent userId={user.sub} />
         </Col>
       </Row>
