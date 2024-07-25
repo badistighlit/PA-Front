@@ -1,67 +1,65 @@
-.custom-navbar {
+/* Navbar.css */
+.nav-container {
+    position: relative;
+  }
+  
+  .custom-navbar {
     background-color: #01002a !important; /* Couleur de fond de la navbar */
-    height: 60px; /* Hauteur de la navbar */
-    padding: 0; /* Supprime le padding interne */
+    height: 60px; /* Ajustez la hauteur de la navbar */
+    padding: 0; /* Supprimez les marges internes pour rendre la navbar plus fine */
     display: flex;
-    align-items: center; /* Centre verticalement les éléments */
-    justify-content: flex-start; /* Aligne tous les éléments à gauche */
-}
-
-.custom-navbar .navbar-brand {
+    align-items: center; /* Aligne les éléments au centre verticalement */
+  }
+  
+  .custom-navbar .logo {
+    position: absolute;
+    bottom: 0; /* Positionne le logo en bas */
+    left: 0; /* Positionne le logo à gauche */
+    height: 60px;
+    width : 60px; /* Ajustez la hauteur du logo selon vos besoins */
+    margin-left: 50px; /* Ajustez l'espacement à gauche du logo */
+  }
+  
+  .custom-navbar .nav-link {
+    color: #ffffff; /* Couleur blanche pour les liens */
+    padding: 0.25rem 0.75rem; /* Ajustez le padding des liens pour les rendre plus fins */
     display: flex;
-    align-items: center; /* Centre verticalement le logo */
-    margin-right: 1rem; /* Réduit l'espace entre le logo et les éléments de navigation */
-}
-
-.custom-navbar .logo {
-    height: -30; /* Ajuste la hauteur du logo */
-}
-
-.custom-navbar .nav {
-    display: flex;
-    align-items: center; /* Aligne les éléments de navigation verticalement */
-    margin: 0; /* Supprime la marge des éléments de navigation */
-}
-
-.custom-navbar .nav-item {
-    margin: 0; /* Supprime la marge des éléments de navigation */
-}
-
-.custom-navbar .nav-link {
-    color: #ffffff; /* Couleur des liens */
-    padding: 0.25rem 0.75rem; /* Padding des liens */
-    height: 50%; /* Remplit la hauteur de la navbar */
-    display: flex;
-    align-items: center; /* Aligne le texte des liens verticalement */
-}
-
-.custom-navbar .nav-link:hover {
-    color: #e0e0e0; /* Couleur des liens au survol */
-}
-
-.custom-navbar .dropdown-menu {
+    align-items: center; /* Aligne le texte des liens au centre verticalement */
+  }
+  
+  .custom-navbar .nav-link:hover {
+    color: #e0e0e0; /* Couleur claire pour les liens au survol */
+  }
+  
+  .custom-navbar .dropdown-menu {
     background-color: #01002a; /* Couleur de fond du menu déroulant */
-}
-
-.custom-navbar .dropdown-item {
-    color: #ffffff; /* Couleur des éléments du menu déroulant */
-}
-
-.custom-navbar .dropdown-item:hover {
+  }
+  
+  .custom-navbar .dropdown-item {
+    color: #ffffff; /* Couleur blanche pour les éléments du menu déroulant */
+  }
+  
+  .custom-navbar .dropdown-item:hover {
     background-color: #e0e0e0; /* Couleur de fond des éléments du menu déroulant au survol */
     color: #01002a; /* Couleur du texte au survol */
-}
-
-.nav-user-profile {
+  }
+  
+  .nav-user-profile {
     border: 2px solid #ffffff; /* Bordure blanche autour de l'image du profil */
     height: 40px; /* Hauteur de l'image du profil */
-}
-
-.user-info h6 {
-    color: #ffffff; /* Couleur du texte du nom d'utilisateur dans le menu mobile */
-    margin: 0; /* Supprime la marge */
-}
-
-.navbar-toggler {
-    margin-left: auto; /* Aligne le toggler à droite */
-}
+    width: 40px; /* Largeur de l'image du profil */
+    margin-top: -10px; /* Ajuste la position verticale de l'image du profil */
+  }
+  .user-info h6 {
+    color: #ffffff; /* Couleur blanche du texte du nom d'utilisateur dans le menu mobile */
+    margin: 0; /* Supprimez la marge pour compacter le texte */
+  }
+  
+  .navbar-brand {
+    padding: 0.25rem 0; /* Ajustez le padding pour rendre le brand plus fin */
+  }
+  
+  .navbar-toggler {
+    padding: 0.25rem 0.75rem; /* Ajustez le padding pour rendre le toggler plus fin */
+  }
+  

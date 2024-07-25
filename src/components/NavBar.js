@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import '../css/Navbar.css';
+import '../css/Navbar.css'
 import {
   Collapse,
   Container,
@@ -27,21 +27,21 @@ const NavBar = () => {
 
   const logoutWithRedirect = () =>
     logout({
-        logoutParams: {
-          returnTo: window.location.origin,
-        }
+      logoutParams: {
+        returnTo: window.location.origin,
+      }
     });
 
   return (
     <div className="nav-container">
       <Navbar className="custom-navbar fixed-top" expand="md">
         <Container>
-          <NavbarBrand className="d-flex align-items-center">
-            <img src="/logo codnshare.png" alt="Logo" className="logo" />
+          <NavbarBrand>
+            <img src="/logo codnshare.png" alt="Logo" className="logo" /> {/* Utiliser l'image PNG ici */}
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto" navbar>
+            <Nav className="mr-auto" navbar>
               <NavItem>
                 <NavLink
                   tag={RouterNavLink}
